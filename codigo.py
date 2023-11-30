@@ -4,10 +4,7 @@ import os
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-output_directory = "C:/Users/ulises/Documents/Reto_Cristian/Imagenes/"
-if not os.path.exists(output_directory):
-    os.makedirs(output_directory)
-    
+####Leyendo los archivos    
 archivos = [
     "Cierre_agricola_mun_2003.csv",
     "Cierre_agricola_mun_2004.csv",
@@ -48,7 +45,7 @@ def crear_tabla_desde_archivo(archivo, conn):
 def limpiar_y_crear_tabla(archivo, conn):
     fecha = archivo.split('_')[3].split('.')[0]
     df = pd.read_csv(f"Datos/{archivo}", encoding='ISO-8859-1')
-    columna_precio = "Precio" if "Precio" in df.columns else "Preciomediorural"
+    columna_precio = "Precio" if "Precio" in df.columns else "Preciomediorural" #Aqui se generaliza las columnas con nombres ditintos 
     columnas = [
         "Anio", "Idestado", "Idddr", "Idcader", "Idmunicipio", "Idciclo",
         "Idmodalidad", "Idunidadmedida", "Idcultivo", "Sembrada", "Cosechada",
@@ -59,7 +56,7 @@ def limpiar_y_crear_tabla(archivo, conn):
     df_clean.to_sql(tabla_clean, conn, index=False, if_exists='replace')
 
 
-conn = sqlite3.connect('DB_AGRICOLA3.db')
+conn = sqlite3.connect('DB_AGRICOLA3.db') #se abre la conexion con la base de datos 
 
 for archivo in archivos:
     if f"tabla_{archivo.split('_')[3].split('.')[0]}" not in pd.read_sql_query("SELECT name FROM sqlite_master WHERE type='table';", conn)["name"].tolist():
@@ -69,7 +66,7 @@ for archivo in archivos:
 años = range(2003, 2023)
 
 
-for combinacion in combinaciones:
+for combinacion in combinaciones:  # se crean las distintas tablas con la informacion mas segmentada 
     nombre_columna_id, nombre_columna_nom = combinacion
     consulta_sql = f'SELECT DISTINCT {nombre_columna_id}, {nombre_columna_nom} FROM tabla_{años[0]}'
     
@@ -84,10 +81,11 @@ for combinacion in combinaciones:
 
 años2 = range(2015, 2021)
 
+## Aqui se vuelven a generalizar los nombres de las tablas
 consulta2_sql = f'''
     SELECT Idcultivo,
            CASE
-               WHEN Anio BETWEEN 2015 AND 2020 THEN "Nomcultivo Sin Um"
+               WHEN Anio BETWEEN 2015 AND 2020 THEN "Nomcultivo Sin Um" 
                ELSE "Nomcultivo"
            END AS NombreCultivo
     FROM tabla_{años[0]}
@@ -104,7 +102,7 @@ for año in años2[1:]:
     FROM tabla_{año}
 '''
 
-
+#se obtiene un DataFrame apartir de la consulta
 df_resultado2 = pd.read_sql_query(consulta2_sql, conn)
 nombre_tabla2 = 'Idcultivo_NombreCultivo_tabla'
 df_resultado2.to_sql(nombre_tabla2, conn, index=False, if_exists='replace')
@@ -156,6 +154,10 @@ print(Ventas_por_cultivo_anuales)
 
 conn.close()
 
+#########se realizan consultas y se grafican algunos de los datos optenidos
+output_directory = "C:/Users/ulises/Documents/Reto_Cristian/Imagenes/"
+if not os.path.exists(output_directory):
+    os.makedirs(output_directory)
 for i in años:
     df_plot = Ventas_por_cultivo_anuales[Ventas_por_cultivo_anuales['Anio'] == i]
     df_plot_sorted = df_plot.sort_values(by='SumaValorproduccion', ascending=False)
@@ -167,9 +169,9 @@ for i in años:
     plt.ylabel('Valor de produccion')
     plt.title(f'Top 10 Productos con mayor de Valor de produccion en México durante {i}')
     plt.xticks(rotation=45)
-    nombre_archivo = f"Top10_Productos_Mexico_{i}.png"
-    ruta_archivo = os.path.join(output_directory, nombre_archivo)
-    plt.savefig(ruta_archivo)
+    # nombre_archivo = f"Top10_Productos_Mexico_{i}.png"
+    # ruta_archivo = os.path.join(output_directory, nombre_archivo)
+    # plt.savefig(ruta_archivo)
     plt.show()
 
 #####################################################################################################
@@ -231,10 +233,9 @@ for j in años:
     plt.ylabel('Valor de produccion')
     plt.title(f'Top 10 Productos con mayor de Valor de produccion en Chihuahua durante {j}')
     plt.xticks(rotation=45)
-
-    nombre_archivo = f"Top10_Productos_Chihuahua_{j}.png"
-    ruta_archivo = os.path.join(output_directory, nombre_archivo)
-    plt.savefig(ruta_archivo)
+    # nombre_archivo = f"Top10_Productos_Chihuahua_{j}.png"
+    # ruta_archivo = os.path.join(output_directory, nombre_archivo)
+    # plt.savefig(ruta_archivo)
     plt.show()
 
 
@@ -295,13 +296,9 @@ for k in años:
     plt.ylabel('Valor de produccion')
     plt.title(f'Top 10 Productos con mayor de Valor de produccion en Juárez durante {k}')
     plt.xticks(rotation=45)
-
-    # Guardar la figura en el directorio especificado con un nombre único
-    nombre_archivo = f"Top10_Productos_Juarez_{k}.png"
-    ruta_archivo = os.path.join(output_directory, nombre_archivo)
-    plt.savefig(ruta_archivo)
-
-    # Mostrar la figura
+    # nombre_archivo = f"Top10_Productos_Juarez_{k}.png"
+    # ruta_archivo = os.path.join(output_directory, nombre_archivo)
+    # plt.savefig(ruta_archivo)
     plt.show()
 
 
