@@ -1,6 +1,13 @@
 import sqlite3
 import pandas as pd
+import os
+import matplotlib.pyplot as plt
+import seaborn as sns
 
+output_directory = "C:/Users/ulises/Documents/Reto_Cristian/Imagenes/"
+if not os.path.exists(output_directory):
+    os.makedirs(output_directory)
+    
 archivos = [
     "Cierre_agricola_mun_2003.csv",
     "Cierre_agricola_mun_2004.csv",
@@ -149,13 +156,6 @@ print(Ventas_por_cultivo_anuales)
 
 conn.close()
 
-
-
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-
-
 for i in años:
     df_plot = Ventas_por_cultivo_anuales[Ventas_por_cultivo_anuales['Anio'] == i]
     df_plot_sorted = df_plot.sort_values(by='SumaValorproduccion', ascending=False)
@@ -167,10 +167,10 @@ for i in años:
     plt.ylabel('Valor de produccion')
     plt.title(f'Top 10 Productos con mayor de Valor de produccion en México durante {i}')
     plt.xticks(rotation=45)
+    nombre_archivo = f"Top10_Productos_Mexico_{i}.png"
+    ruta_archivo = os.path.join(output_directory, nombre_archivo)
+    plt.savefig(ruta_archivo)
     plt.show()
-
-
-
 
 #####################################################################################################
 
@@ -218,6 +218,8 @@ conn.close()
 
 
     
+
+
 for j in años:
     df_plot2 = Ventas_por_cultivo_anuales_estado[Ventas_por_cultivo_anuales_estado['Anio'] == j]
     df_plot2_sorted = df_plot2.sort_values(by='SumaValorproduccion', ascending=False)
@@ -229,7 +231,12 @@ for j in años:
     plt.ylabel('Valor de produccion')
     plt.title(f'Top 10 Productos con mayor de Valor de produccion en Chihuahua durante {j}')
     plt.xticks(rotation=45)
+
+    nombre_archivo = f"Top10_Productos_Chihuahua_{j}.png"
+    ruta_archivo = os.path.join(output_directory, nombre_archivo)
+    plt.savefig(ruta_archivo)
     plt.show()
+
 
 
 #####################################################################################################
@@ -275,7 +282,8 @@ print(Ventas_por_cultivo_anuales_municipio)
 conn.close()
 
 
-    
+
+
 for k in años:
     df_plot3 = Ventas_por_cultivo_anuales_municipio[Ventas_por_cultivo_anuales_municipio['Anio'] == k]
     df_plot3_sorted = df_plot3.sort_values(by='SumaValorproduccion', ascending=False)
@@ -287,6 +295,13 @@ for k in años:
     plt.ylabel('Valor de produccion')
     plt.title(f'Top 10 Productos con mayor de Valor de produccion en Juárez durante {k}')
     plt.xticks(rotation=45)
+
+    # Guardar la figura en el directorio especificado con un nombre único
+    nombre_archivo = f"Top10_Productos_Juarez_{k}.png"
+    ruta_archivo = os.path.join(output_directory, nombre_archivo)
+    plt.savefig(ruta_archivo)
+
+    # Mostrar la figura
     plt.show()
 
 
